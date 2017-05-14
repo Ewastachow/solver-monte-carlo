@@ -3,11 +3,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import java.lang.*;
 import java.lang.System;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by yevv on 14.05.17.
@@ -20,7 +16,7 @@ public class ConsoleQA {
         this.scanner = new Scanner(System.in);
     }
 
-    int wczytajZKonsoliInta() {
+    int getInt() {
         while(true) {
             try {
                 return Integer.valueOf(scanner.nextLine());
@@ -30,7 +26,7 @@ public class ConsoleQA {
         }
     }
 
-    double wczytajZKonsoliDouble() {
+    double getDouble() {
         while(true) {
             try {
                 return Double.valueOf(scanner.nextLine());
@@ -40,7 +36,7 @@ public class ConsoleQA {
         }
     }
 
-    String wczytajZKonsoliSymbolZmiennejDecyzyjnej() {
+    String getVariableChar() {
         while(true) {
             try {
                 String symbol = scanner.nextLine();
@@ -64,7 +60,7 @@ public class ConsoleQA {
         }
     }
 
-    Equation wczytajZKonsoliOgraniczenie(SystemEquation systemEquation) {
+    Equation getEquation(SystemEquation systemEquation) {
         while(true) {
             try {
                 String ograniczenie = scanner.nextLine();
@@ -119,7 +115,7 @@ public class ConsoleQA {
         }
     }
 
-    Expression wczytajFunkcjeCelu(SystemEquation systemEquation) {
+    Expression getGoalFunction(SystemEquation systemEquation) {
         while(true) {
             try {
                 String fCelu = scanner.nextLine();
@@ -138,7 +134,7 @@ public class ConsoleQA {
         }
     }
 
-    int wczytajCzyMaxCzyMin() {
+    int getIfMinOrMax() {
         while(true) {
             try {
                 int tmp = Integer.valueOf(scanner.nextLine());
@@ -153,11 +149,11 @@ public class ConsoleQA {
 
     public void asking(SystemEquation systemEquation) {
         System.out.println("Podaj liczbe zmiennych decyzyjnych: ");
-        systemEquation.variableAmong = wczytajZKonsoliInta();
+        systemEquation.variableAmong = getInt();
 
         System.out.println("Podaj symbole zmiennych decyzyjnych (po kazdym nacisnij ENTER): ");
         for(int i = 0; i < systemEquation.variableAmong; ++i)
-            systemEquation.variableSymbolList.add(wczytajZKonsoliSymbolZmiennejDecyzyjnej());
+            systemEquation.variableSymbolList.add(getVariableChar());
 
         systemEquation.variableSymbolTab = new String[systemEquation.variableAmong];
         for(int i = 0; i < systemEquation.variableAmong; ++i) {
@@ -165,87 +161,17 @@ public class ConsoleQA {
         }
 
         System.out.println("Podaj liczbe ograniczen: ");
-        systemEquation.equationAmong = wczytajZKonsoliInta();
+        systemEquation.equationAmong = getInt();
 
         for(int i = 0; i < systemEquation.equationAmong; ++i){
-            systemEquation.equationList.add(wczytajZKonsoliOgraniczenie(systemEquation));
+            systemEquation.equationList.add(getEquation(systemEquation));
         }
 
         System.out.println("Podaj funkcje celu: ");
-        systemEquation.goalFunction = wczytajFunkcjeCelu(systemEquation);
+        systemEquation.goalFunction = getGoalFunction(systemEquation);
 
         System.out.println("Max czy min?\n1 - max\n2 - min");
-        systemEquation.minOrMax = wczytajCzyMaxCzyMin();
-
-
-        double x, y;
-        List<Double> listX = new ArrayList<>();
-        List<Double> listY = new ArrayList<>();
-        double minLubMax = 0;
-        Random rand = new Random();
-        for(int i = 0; i < 1000; ++i) {
-            x = ThreadLocalRandom.current().nextInt((int)(systemEquation.equationList.get(systemEquation.equationList.size() - 2).expressionsTab[0]).evaluate(), ((int)(systemEquation.equationList.get(systemEquation.equationList.size() - 2).expressionsTab[2]).evaluate() + 1));
-            //y = ThreadLocalRandom.current().nextInt((int)(SMC.equationList.get(SMC.equationList.size() - 1).expressionsTab[0]).evaluate(), ((int)(SMC.equationList.get(SMC.equationList.size() - 1).expressionsTab[2]).evaluate() + 1));
-            y = ((double)2/3)*x;
-            boolean czySpelnia = true;
-            for(int j = 0; j < systemEquation.equationList.size() - systemEquation.variableAmong; ++j) {
-
-                System.out.println("" + systemEquation.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() + systemEquation.equationList.get(j).compareSymbol + systemEquation.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate());
-
-                if(systemEquation.equationList.get(j).compareSymbol.equalsIgnoreCase("<=")) {
-                    if(!(systemEquation.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() <= systemEquation.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } else if(systemEquation.equationList.get(j).compareSymbol.equalsIgnoreCase(">=")) {
-                    if(!(systemEquation.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() >= systemEquation.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } /*else if(SMC.equationList.get(j).compareSymbol.equalsIgnoreCase("=")) {
-                    if(!(SMC.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() == SMC.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                }*/ else if(systemEquation.equationList.get(j).compareSymbol.equalsIgnoreCase(">")) {
-                    if(!(systemEquation.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() > systemEquation.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } else if(systemEquation.equationList.get(j).compareSymbol.equalsIgnoreCase("<")) {
-                    if(!(systemEquation.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() < systemEquation.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                }
-            }
-            if(czySpelnia) {
-                System.out.println("x = " + x + "; y = " + y);
-                listX.add(x);
-                listY.add(y);
-                double wartoscFunkcjiCelu = systemEquation.goalFunction.setVariable("x", x).setVariable("y", y).evaluate();
-                if(listX.size() == 1) {
-                    minLubMax = wartoscFunkcjiCelu;
-                } else {
-                    if(systemEquation.minOrMax == 1) {
-                        if(wartoscFunkcjiCelu > minLubMax) {
-                            minLubMax = wartoscFunkcjiCelu;
-                        }
-                    } else if(systemEquation.minOrMax == 2) {
-                        if(wartoscFunkcjiCelu < minLubMax) {
-                            minLubMax = wartoscFunkcjiCelu;
-                        }
-                    }
-                }
-            }
-            czySpelnia = true;
-        }
-
-        System.out.println(minLubMax);
-
-        /*for(int i = 0; i < SMC.equationList.size(); ++i) {
-            SystemEquation.out.println(SMC.equationList.get(i));
-        }*/
+        systemEquation.minOrMax = getIfMinOrMax();
 
     }
 }

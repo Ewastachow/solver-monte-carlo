@@ -5,9 +5,9 @@ import java.util.Map;
  */
 public class Solution {
     double solution;
-    Map<Character, Double>  parametrsValueMap;
+    Map<String, Double>  parametrsValueMap;
 
-    public Solution(double solution, Map<Character, Double> parametrsValueMap) {
+    public Solution(double solution, Map<String, Double> parametrsValueMap) {
         this.solution = solution;
         this.parametrsValueMap = parametrsValueMap;
     }

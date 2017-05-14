@@ -32,8 +32,30 @@ public class SystemEquation {
         for(String s : variableSymbolList)
             variableValueMap.put(s, new Double(start));
 
+        if(variableAmong == 3) iterations = 30;
+        if(variableAmong == 4) iterations = 10;
+
+
         variableValueMap = iterationSolve(variableValueMap, start);
+        if(variableValueMap.isEmpty()){
+            start = 100;
+            for(String s : variableSymbolList)
+                variableValueMap.put(s, new Double(start));
+            variableValueMap = iterationSolve(variableValueMap, start);
+            if(variableValueMap.isEmpty()){
+                start = 10;
+                for(String s : variableSymbolList)
+                    variableValueMap.put(s, new Double(start));
+                variableValueMap = iterationSolve(variableValueMap, start);
+            }
+        }
         variableValueMap = iterationSolve(variableValueMap, start/80);
+        if(variableValueMap.isEmpty()){
+            start = 10;
+            for(String s : variableSymbolList)
+                variableValueMap.put(s, new Double(start));
+            variableValueMap = iterationSolve(variableValueMap, start);
+        }
         variableValueMap = iterationSolve(variableValueMap, start/500);
 
         return new Solution(goalFunction.setVariables(variableValueMap).evaluate(), variableValueMap);

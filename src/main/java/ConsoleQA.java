@@ -151,7 +151,10 @@ public class ConsoleQA {
         System.out.println("Podaj liczbe zmiennych decyzyjnych: ");
         systemEquation.variableAmong = getInt();
 
-        System.out.println("Podaj symbole zmiennych decyzyjnych (po kazdym nacisnij ENTER): ");
+        System.out.println("Podaj liczbe ograniczen: ");
+        systemEquation.equationAmong = getInt();
+
+        System.out.println("Podaj symbole zmiennych decyzyjnych: ");
         for(int i = 0; i < systemEquation.variableAmong; ++i)
             systemEquation.variableSymbolList.add(getVariableChar());
 
@@ -160,9 +163,7 @@ public class ConsoleQA {
             systemEquation.variableSymbolTab[i] = systemEquation.variableSymbolList.get(i);
         }
 
-        System.out.println("Podaj liczbe ograniczen: ");
-        systemEquation.equationAmong = getInt();
-
+        System.out.println("Podaj ograniczenia: ");
         for(int i = 0; i < systemEquation.equationAmong; ++i){
             systemEquation.equationList.add(getEquation(systemEquation));
         }
@@ -170,7 +171,7 @@ public class ConsoleQA {
         System.out.println("Podaj funkcje celu: ");
         systemEquation.goalFunction = getGoalFunction(systemEquation);
 
-        System.out.println("Max czy min?\n1 - max\n2 - min");
+        System.out.println("\n1 - max\n2 - min");
         systemEquation.minOrMax = getIfMinOrMax();
 
     }

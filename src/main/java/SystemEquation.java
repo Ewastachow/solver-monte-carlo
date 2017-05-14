@@ -33,6 +33,8 @@ public class SystemEquation {
             variableValueMap.put(s, new Double(start));
 
         variableValueMap = iterationSolve(variableValueMap, start);
+        variableValueMap = iterationSolve(variableValueMap, start/80);
+        variableValueMap = iterationSolve(variableValueMap, start/500);
 
         return new Solution(goalFunction.setVariables(variableValueMap).evaluate(), variableValueMap);
     }

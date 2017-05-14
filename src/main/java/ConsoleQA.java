@@ -26,16 +26,6 @@ public class ConsoleQA {
         }
     }
 
-    double getDouble() {
-        while(true) {
-            try {
-                return Double.valueOf(scanner.nextLine());
-            }catch(Exception ex) {
-                System.out.println("Błędna wartość. Spróbuj ponownie.");
-            }
-        }
-    }
-
     String getVariableChar() {
         while(true) {
             try {
@@ -154,6 +144,9 @@ public class ConsoleQA {
         System.out.println("Podaj liczbe ograniczen: ");
         systemEquation.equationAmong = getInt();
 
+        System.out.println("\n1 - max\n2 - min");
+        systemEquation.minOrMax = getIfMinOrMax();
+
         System.out.println("Podaj symbole zmiennych decyzyjnych: ");
         for(int i = 0; i < systemEquation.variableAmong; ++i)
             systemEquation.variableSymbolList.add(getVariableChar());
@@ -170,9 +163,6 @@ public class ConsoleQA {
 
         System.out.println("Podaj funkcje celu: ");
         systemEquation.goalFunction = getGoalFunction(systemEquation);
-
-        System.out.println("\n1 - max\n2 - min");
-        systemEquation.minOrMax = getIfMinOrMax();
 
     }
 }

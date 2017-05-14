@@ -16,7 +16,7 @@ public class SystemEquation {
     List<Equation> equationList;
     Expression goalFunction;
     int minOrMax; // max = 1, min = 2
-    int start = 2000;
+    int start = 4000;
     int iterations = 100;
 
 
@@ -29,36 +29,54 @@ public class SystemEquation {
 
         variableValueMap = new HashMap<>();
 
+        if(variableAmong == 1) iterations = 200;
+        else if(variableAmong == 2) iterations = 100;
+        else if(variableAmong == 3) iterations = 20;
+        else if(variableAmong == 4) iterations = 10;
+
         for(String s : variableSymbolList)
-            variableValueMap.put(s, new Double(start));
+            variableValueMap.put(s, (double) (start));
 
-        if(variableAmong == 3) iterations = 30;
-        if(variableAmong == 4) iterations = 10;
+        solveIter(start);
 
-
-        variableValueMap = iterationSolve(variableValueMap, start);
-        if(variableValueMap.isEmpty()){
-            start = 100;
-            for(String s : variableSymbolList)
-                variableValueMap.put(s, new Double(start));
-            variableValueMap = iterationSolve(variableValueMap, start);
-            if(variableValueMap.isEmpty()){
-                start = 10;
-                for(String s : variableSymbolList)
-                    variableValueMap.put(s, new Double(start));
-                variableValueMap = iterationSolve(variableValueMap, start);
-            }
-        }
-        variableValueMap = iterationSolve(variableValueMap, start/80);
-        if(variableValueMap.isEmpty()){
-            start = 10;
-            for(String s : variableSymbolList)
-                variableValueMap.put(s, new Double(start));
-            variableValueMap = iterationSolve(variableValueMap, start);
-        }
-        variableValueMap = iterationSolve(variableValueMap, start/500);
+//        for(String s : variableSymbolList)
+//            variableValueMap.put(s, (double) start);
+//
+//
+//        variableValueMap = iterationSolve(variableValueMap, start);
+//        if(variableValueMap.isEmpty()){
+//            start = 100;
+//            for(String s : variableSymbolList)
+//                variableValueMap.put(s, new Double(start));
+//            variableValueMap = iterationSolve(variableValueMap, start);
+//            if(variableValueMap.isEmpty()){
+//                start = 10;
+//                for(String s : variableSymbolList)
+//                    variableValueMap.put(s, new Double(start));
+//                variableValueMap = iterationSolve(variableValueMap, start);
+//            }
+//        }
+//        variableValueMap = iterationSolve(variableValueMap, start/80);
+//        if(variableValueMap.isEmpty()){
+//            start = 10;
+//            for(String s : variableSymbolList)
+//                variableValueMap.put(s, new Double(start));
+//            variableValueMap = iterationSolve(variableValueMap, start);
+//        }
+//        variableValueMap = iterationSolve(variableValueMap, start/500);
 
         return new Solution(goalFunction.setVariables(variableValueMap).evaluate(), variableValueMap);
+    }
+
+    void solveIter(int start){
+        variableValueMap = iterationSolve(variableValueMap, start);
+        if(variableValueMap.isEmpty()){
+            for(String s : variableSymbolList)
+                variableValueMap.put(s, (double) (start / 3));
+            solveIter(start/3);
+        }else if(start > 1){
+            solveIter(start/100);
+        }
     }
 
     Map<String, Double> iterationSolve(Map<String, Double> pointInside, double radious){
@@ -154,8 +172,14 @@ public class SystemEquation {
             }
         }else if(variableAmong==2){
             Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
-            Map.Entry<String, List<Double>> entry1 = it.next();
-            Map.Entry<String, List<Double>> entry2 = it.next();
+            Map.Entry<String, List<Double>> entry1;
+            Map.Entry<String, List<Double>> entry2;
+            if(it.hasNext()){
+                entry1 = it.next();
+                if(it.hasNext())
+                    entry2 = it.next();
+                else return result;
+            } else return result;
             String variable1 = entry1.getKey();
             String variable2 = entry2.getKey();
             for(Double d1 : entry1.getValue())
@@ -168,9 +192,18 @@ public class SystemEquation {
 
         }else if(variableAmong==3){
             Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
-            Map.Entry<String, List<Double>> entry1 = it.next();
-            Map.Entry<String, List<Double>> entry2 = it.next();
-            Map.Entry<String, List<Double>> entry3 = it.next();
+            Map.Entry<String, List<Double>> entry1;
+            Map.Entry<String, List<Double>> entry2;
+            Map.Entry<String, List<Double>> entry3;
+            if(it.hasNext()){
+                entry1 = it.next();
+                if(it.hasNext()){
+                    entry2 = it.next();
+                    if(it.hasNext()){
+                        entry3 = it.next();
+                    }else return result;
+                }else return result;
+            } else return result;
             String variable1 = entry1.getKey();
             String variable2 = entry2.getKey();
             String variable3 = entry3.getKey();
@@ -183,12 +216,24 @@ public class SystemEquation {
                         tmp21.put(variable3, d3);
                         result.add(tmp21);
                     }
-        }else if(variableAmong==4){
+        }else{
             Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
-            Map.Entry<String, List<Double>> entry1 = it.next();
-            Map.Entry<String, List<Double>> entry2 = it.next();
-            Map.Entry<String, List<Double>> entry3 = it.next();
-            Map.Entry<String, List<Double>> entry4 = it.next();
+            Map.Entry<String, List<Double>> entry1;
+            Map.Entry<String, List<Double>> entry2;
+            Map.Entry<String, List<Double>> entry3;
+            Map.Entry<String, List<Double>> entry4;
+            if(it.hasNext()){
+                entry1 = it.next();
+                if(it.hasNext()){
+                    entry2 = it.next();
+                    if(it.hasNext()){
+                        entry3 = it.next();
+                        if(it.hasNext()){
+                            entry4 = it.next();
+                        }else return result;
+                    }else return result;
+                }else return result;
+            } else return result;
             String variable1 = entry1.getKey();
             String variable2 = entry2.getKey();
             String variable3 = entry3.getKey();
@@ -205,14 +250,6 @@ public class SystemEquation {
                             result.add(tmp21);
                         }
         }
-
-//        for(Map.Entry<String, List<Double>> m : tmp.entrySet()){
-//            for(Double d : m.getValue()){
-//
-//            }
-//        }
-
-        // todo jak zrobić coś takiego zeby dla kazdego stringa były 100 roznych wartsci
 
         return result;
     }

@@ -16,6 +16,8 @@ public class SystemEquation {
     List<Equation> equationList;
     Expression goalFunction;
     int minOrMax; // max = 1, min = 2
+    int start = 2000;
+    int iterations = 100;
 
 
     public SystemEquation() {
@@ -23,86 +25,14 @@ public class SystemEquation {
         this.equationList = new ArrayList<>();
     }
 
-    public Solution solve(){
-        double x, y;
-        List<Double> listX = new ArrayList<>();
-        List<Double> listY = new ArrayList<>();
-        double minLubMax = 0;
-        Random rand = new Random();
-        for(int i = 0; i < 1000; ++i) {
-            x = ThreadLocalRandom.current().nextInt((int)(equationList.get(equationList.size() - 2).expressionsTab[0]).evaluate(),
-                    ((int)(equationList.get(equationList.size() - 2).expressionsTab[2]).evaluate() + 1));
-            //y = ThreadLocalRandom.current().nextInt((int)(SMC.equationList.get(SMC.equationList.size() - 1).expressionsTab[0]).evaluate(),
-            // ((int)(SMC.equationList.get(SMC.equationList.size() - 1).expressionsTab[2]).evaluate() + 1));
-            y = ((double)2/3)*x;
-            boolean czySpelnia = true;
-            for(int j = 0; j < equationList.size() - variableAmong; ++j) {
-
-//                System.out.println("" + equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() + equationList.get(j).compareSymbol + equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate());
-
-                if(equationList.get(j).compareSymbol.equalsIgnoreCase("<=")) {
-                    if(!(equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() <= equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } else if(equationList.get(j).compareSymbol.equalsIgnoreCase(">=")) {
-                    if(!(equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() >= equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } /*else if(SMC.equationList.get(j).compareSymbol.equalsIgnoreCase("=")) {
-                    if(!(SMC.equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() == SMC.equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                }*/ else if(equationList.get(j).compareSymbol.equalsIgnoreCase(">")) {
-                    if(!(equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() > equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                } else if(equationList.get(j).compareSymbol.equalsIgnoreCase("<")) {
-                    if(!(equationList.get(j).expressionsTab[0].setVariable("x", x).setVariable("y", y).evaluate() < equationList.get(j).expressionsTab[1].setVariable("x", x).setVariable("y", y).evaluate())) {
-                        czySpelnia = false;
-                        break;
-                    }
-                }
-            }
-            if(czySpelnia) {
-                System.out.println("x = " + x + "; y = " + y);
-                listX.add(x);
-                listY.add(y);
-                double wartoscFunkcjiCelu = goalFunction.setVariable("x", x).setVariable("y", y).evaluate();
-                if(listX.size() == 1) {
-                    minLubMax = wartoscFunkcjiCelu;
-                } else {
-                    if(minOrMax == 1) {
-                        if(wartoscFunkcjiCelu > minLubMax) {
-                            minLubMax = wartoscFunkcjiCelu;
-                        }
-                    } else if(minOrMax == 2) {
-                        if(wartoscFunkcjiCelu < minLubMax) {
-                            minLubMax = wartoscFunkcjiCelu;
-                        }
-                    }
-                }
-            }
-            czySpelnia = true;
-        }
-
-        System.out.println(minLubMax);
-
-        /*for(int i = 0; i < SMC.equationList.size(); ++i) {
-            SystemEquation.out.println(SMC.equationList.get(i));
-        }*/
-        return null;
-    }
-
     public Solution getSolution(){
 
-        for(String s : variableSymbolList)
-            variableValueMap.put(s, new Double(300));
+        variableValueMap = new HashMap<>();
 
-        variableValueMap = iterationSolve(variableValueMap, 300);
+        for(String s : variableSymbolList)
+            variableValueMap.put(s, new Double(start));
+
+        variableValueMap = iterationSolve(variableValueMap, start);
 
         return new Solution(goalFunction.setVariables(variableValueMap).evaluate(), variableValueMap);
     }
@@ -119,16 +49,16 @@ public class SystemEquation {
         double bestAmong;
         if(minOrMax == 1)
             bestAmong = 0;
-        else bestAmong = 1000;
+        else bestAmong = 2*start;
         Map<String, Double> bestValues = new HashMap<>();
         for(Map.Entry<Map<String, Double>, Double> m : map.entrySet())
             if(minOrMax == 1){
-                if(map.get(m) > bestAmong){
+                if(m.getValue() > bestAmong){
                     bestValues = m.getKey();
                     bestAmong = m.getValue();
                 }
             } else {
-                if(map.get(m) < bestAmong){
+                if(m.getValue() < bestAmong){
                     bestValues = m.getKey();
                     bestAmong = m.getValue();
                 }
@@ -175,18 +105,90 @@ public class SystemEquation {
     }
 
     List<Map<String, Double>> generateExamplesList(Map<String, Double> pointInside, double radious){
-        double step = radious/100;
+        double step = radious/iterations;
+
         List<Map<String, Double>> result = new ArrayList<>();
+
         Map<String, List<Double>> tmp = new HashMap<>();
+
         for(Map.Entry<String, Double> m : pointInside.entrySet()){
-            tmp.get(m.getKey()).add(m.getValue());
-            for(int i = 1; i < 100; i++){
-                tmp.get(m.getKey()).add(m.getValue()+i*step);
-                tmp.get(m.getKey()).add(m.getValue()-i*step);
+            List<Double> list = new ArrayList<>();
+            list.add(m.getValue());
+            for(int i = 1; i < iterations; i++){
+                list.add(m.getValue()+i*step);
+                list.add(m.getValue()-i*step);
             }
+            tmp.put(m.getKey(), list);
         }
 
-        // todo jak zrobić coś takiego zeby dla kazdego stringa były 1000 roznych wartsci
+        if(variableAmong==1){
+            String variable = tmp.entrySet().iterator().next().getKey();
+            for(Double d : tmp.entrySet().iterator().next().getValue()){
+                Map<String, Double> tmp2 = new HashMap<>();
+                tmp2.put(variable, d);
+                result.add(tmp2);
+            }
+        }else if(variableAmong==2){
+            Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
+            Map.Entry<String, List<Double>> entry1 = it.next();
+            Map.Entry<String, List<Double>> entry2 = it.next();
+            String variable1 = entry1.getKey();
+            String variable2 = entry2.getKey();
+            for(Double d1 : entry1.getValue())
+                for(Double d2 : entry2.getValue()){
+                    Map<String, Double> tmp21 = new HashMap<>();
+                    tmp21.put(variable1, d1);
+                    tmp21.put(variable2, d2);
+                    result.add(tmp21);
+                }
+
+        }else if(variableAmong==3){
+            Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
+            Map.Entry<String, List<Double>> entry1 = it.next();
+            Map.Entry<String, List<Double>> entry2 = it.next();
+            Map.Entry<String, List<Double>> entry3 = it.next();
+            String variable1 = entry1.getKey();
+            String variable2 = entry2.getKey();
+            String variable3 = entry3.getKey();
+            for(Double d1 : entry1.getValue())
+                for(Double d2 : entry2.getValue())
+                    for(Double d3 : entry3.getValue()){
+                        Map<String, Double> tmp21 = new HashMap<>();
+                        tmp21.put(variable1, d1);
+                        tmp21.put(variable2, d2);
+                        tmp21.put(variable3, d3);
+                        result.add(tmp21);
+                    }
+        }else if(variableAmong==4){
+            Iterator<Map.Entry<String, List<Double>>> it = tmp.entrySet().iterator();
+            Map.Entry<String, List<Double>> entry1 = it.next();
+            Map.Entry<String, List<Double>> entry2 = it.next();
+            Map.Entry<String, List<Double>> entry3 = it.next();
+            Map.Entry<String, List<Double>> entry4 = it.next();
+            String variable1 = entry1.getKey();
+            String variable2 = entry2.getKey();
+            String variable3 = entry3.getKey();
+            String variable4 = entry4.getKey();
+            for(Double d1 : entry1.getValue())
+                for(Double d2 : entry2.getValue())
+                    for(Double d3 : entry3.getValue())
+                        for(Double d4 : entry4.getValue()){
+                            Map<String, Double> tmp21 = new HashMap<>();
+                            tmp21.put(variable1, d1);
+                            tmp21.put(variable2, d2);
+                            tmp21.put(variable3, d3);
+                            tmp21.put(variable4, d4);
+                            result.add(tmp21);
+                        }
+        }
+
+//        for(Map.Entry<String, List<Double>> m : tmp.entrySet()){
+//            for(Double d : m.getValue()){
+//
+//            }
+//        }
+
+        // todo jak zrobić coś takiego zeby dla kazdego stringa były 100 roznych wartsci
 
         return result;
     }

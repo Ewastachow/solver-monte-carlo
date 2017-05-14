@@ -9,6 +9,8 @@ public class Main {
         SystemEquation systemEquation = new SystemEquation();
         ConsoleQA consoleQA = new ConsoleQA();
         consoleQA.asking(systemEquation);
+        Solution solution = systemEquation.getSolution();
+        System.out.print(solution);
     }
 
 }

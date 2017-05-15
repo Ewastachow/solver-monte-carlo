@@ -37,15 +37,15 @@ public class ConsoleQA {
                 if(Character.isLetter(charArray[0]) || charArray[0] == '_') {
                     for(int i = 1; i < charArray.length; ++i) {
                         if(!Character.isLetter(charArray[i]) && !Character.isDigit(charArray[i]) && charArray[i] != '_') {
-                            throw new Exception("Złe dalsze znaki symbolu.");
+                            throw new Exception("Złe znaki.");
                         }
                     }
                 } else {
-                    throw new Exception("Zły pierwszy compareSymbol symbolu.");
+                    throw new Exception("Zły symbol.");
                 }
                 return symbol;
             } catch (Exception ex) {
-                System.out.println("Zły symbol. Spróbuj inny.");
+                System.out.println("Zły symbol.");
             }
         }
     }
@@ -58,7 +58,7 @@ public class ConsoleQA {
                     throw new Exception("Pusty string");
                 }
                 if(!ograniczenie.contains("<=") && !ograniczenie.contains(">=") && !ograniczenie.contains("=") && !ograniczenie.contains(">") && !ograniczenie.contains("<")) {
-                    throw new Exception("Złe equation");
+                    throw new Exception("Złe ograniczenie");
                 }
                 String[] tokens;
                 String znak;
@@ -88,7 +88,7 @@ public class ConsoleQA {
                     znak = "<";
                 }
                 if(tokens.length > 3)
-                    throw new Exception("Złe equation");
+                    throw new Exception("Złe ograniczenie");
 
                 wyrazenia = new Expression[3];
                 for(int i = 0; i < tokens.length; ++i) {
@@ -100,7 +100,7 @@ public class ConsoleQA {
 
                 return new Equation(ograniczenie, tokens, wyrazenia, znak);
             } catch (Exception ex) {
-                System.out.println("Złe equation. Spróbuj ponownie.");
+                System.out.println("Złe ograniczenie.");
             }
         }
     }
@@ -108,18 +108,18 @@ public class ConsoleQA {
     Expression getGoalFunction(SystemEquation systemEquation) {
         while(true) {
             try {
-                String fCelu = scanner.nextLine();
-                if(fCelu.isEmpty())
+                String goalFunction = scanner.nextLine();
+                if(goalFunction.isEmpty())
                     throw new Exception("Pusty string");
 
-                Expression e = new ExpressionBuilder(fCelu)
+                Expression e = new ExpressionBuilder(goalFunction)
                         .variables(systemEquation.variableSymbolTab)
                         .build();
 
                 return e;
 
             } catch (Exception ex) {
-                System.out.println("Błędna funkcja celu. Spróbuj ponownie.");
+                System.out.println("Błędna funkcja.");
             }
         }
     }
@@ -132,7 +132,7 @@ public class ConsoleQA {
                     throw new Exception("Błędna wartość");
                 return tmp;
             }catch(Exception ex) {
-                System.out.println("Błędna wartość. Spróbuj ponownie.");
+                System.out.println("Błędna wartość.");
             }
         }
     }
